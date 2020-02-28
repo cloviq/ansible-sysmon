@@ -1,0 +1,15 @@
+---
+# handlers file for sysmon
+
+- name: Remove sysmonconfig.xml from local
+  file:
+    path: '{{ sysmon_config_dir }}/{{ sysmon_config }}'
+    state: absent
+  delegate_to: localhost
+  notify: Remove sysmonconfig.xml
+
+- name: Remove sysmonconfig.xml
+  win_file:
+    path: '{{ ansible_env.USERPROFILE }}\Downloads\{{ sysmon_config }}'
+    state: absent
+

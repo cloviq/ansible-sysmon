@@ -1,0 +1,48 @@
+---
+- name: Win check whether installer is copied/downloaded
+  win_stat:
+    path: '{{ sysmon_dir }}\Sysmon64.exe'
+  register: sysmonexe
+
+- name: Win copy sysmon zip to host
+  win_copy:
+    src: "{{ sysmon_zip }}"
+    dest: '{{ ansible_env.USERPROFILE }}\Downloads\{{ sysmon_zip }}'
+  when: 
+    - sysmon_state == "present" 
+    - sysmonexe.stat.exists == False
+
+- name: Unzip sysmon
+  win_unzip:
+    dest: '{{ sysmon_dir }}'
+    delete_archive: yes
+    src: '{{ ansible_env.USERPROFILE }}\Downloads\{{ sysmon_zip }}'
+  when: 
+    - sysmon_state == "present"
+    - sysmonexe.stat.exists == False
+
+- name: Copy sysmon config
+  win_copy:
+    src: '{{ sysmon_config_dir }}/{{ sysmon_config }}'
+    dest: '{{ ansible_env.USERPROFILE }}\Downloads\{{ sysmon_config }}'
+
+- name: Install sysmon config
+  win_command: sysmon64.exe -accepteula -i sysmonconfig.xml 
+  args:
+    chdir: '{{ ansible_env.USERPROFILE }}\Downloads'
+    become: yes
+    become_user: Administrator
+  when:
+    - sysmon_state == "present"
+  notify: Remove sysmonconfig.xml from local
+
+- name: Remove sysmon conf
+  win_command: sysmon64.exe -u
+  args:
+    chdir: '{{ ansible_env.USERPROFILE }}\Downloads'
+    become: yes
+    become_user: Administrator
+  when:
+    - sysmon_state == "absent"
+    
+    

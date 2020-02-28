@@ -1,0 +1,10 @@
+---
+# defaults file for /etc/ansible/roles/sysmon
+
+## Windows defaults
+sysmon_dir: C:\Windows
+sysmon_zip: Sysmon.zip
+sysmon_state: present
+sysmon_config_dir: /tmp
+sysmon_config: sysmonconfig.xml
+
