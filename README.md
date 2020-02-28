@@ -1,4 +1,4 @@
-Role Name
+sysmon
 =========
 
 This role is intended to be used for all Windows hosts that should be capturing sysmon data for security purposes.
